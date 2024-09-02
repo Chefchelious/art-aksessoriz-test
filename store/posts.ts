@@ -1,6 +1,5 @@
 import type { IPagination, IPost } from '~/types';
 import axiosApi from '~/axios/axiosApi';
-import { generateQueryString } from '~/composable/utils';
 
 interface IState {
   posts: IPost[];
