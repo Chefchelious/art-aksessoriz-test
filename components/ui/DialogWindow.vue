@@ -32,7 +32,7 @@
         </button>
         <h2 class="text-xl font-semibold mb-4">Add post</h2>
         <div class="w-full max-w-xs">
-          <div class="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
+          <div class="bg-white shadow-md rounded px-8 pt-6 pb-4 mb-4">
             <div class="mb-4">
               <label
                 class="block text-gray-700 text-sm font-bold mb-2"
@@ -43,7 +43,7 @@
               <input
                 v-model="formData.title"
                 class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline mb-3"
-                :class="`${ formDataErrors.titleError ? 'border-red-500' : '' }`"
+                :class="`${formDataErrors.titleError ? 'border-red-500' : ''}`"
                 type="text"
               />
               <p
@@ -54,16 +54,13 @@
               </p>
             </div>
             <div>
-              <label
-                class="block text-gray-700 text-sm font-bold mb-2"
-                for="password"
-              >
+              <label class="block text-gray-700 text-sm font-bold mb-2">
                 Body
               </label>
               <textarea
                 v-model="formData.body"
                 class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 mb-3 leading-tight focus:outline-none focus:shadow-outline"
-                :class="`${ formDataErrors.bodyError ? 'border-red-500' : '' }`"
+                :class="`${formDataErrors.bodyError ? 'border-red-500' : ''}`"
                 placeholder="type something..."
               />
               <p
@@ -79,13 +76,13 @@
         <div class="flex items-center justify-between">
           <button
             type="submit"
-            class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+            class="bg-blue-500 text-white px-2 py-1 rounded hover:bg-blue-600"
           >
             Send
           </button>
           <button
             type="button"
-            class="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600"
+            class="bg-red-500 text-white px-2 py-1 rounded hover:bg-red-600"
             @click="close"
           >
             Close
@@ -97,15 +94,20 @@
 </template>
 
 <script setup lang="ts">
-import type { IPost } from '~/types';
+import type { ICreatePost } from '~/types';
+import { usePostStore } from '~/store/posts';
 
 const props = defineProps<{
   isVisible: boolean;
 }>();
 
-const formData = reactive<Omit<IPost, 'id' | 'userId'>>({
+const postStore = usePostStore();
+const { loading, _page } = storeToRefs(postStore);
+
+const formData = reactive<ICreatePost>({
   title: '',
   body: '',
+  userId: 7,
 });
 
 const formDataErrors = reactive({
@@ -138,9 +140,8 @@ const validateForm = (): boolean => {
 const emit = defineEmits(['close', 'update:formData']);
 
 const clearFormData = () => {
-  (Object.keys(formData) as Array<keyof typeof formData>).forEach((key) => {
-    formData[key] = '';
-  });
+  formData.title = '';
+  formData.body = '';
 };
 
 const close = () => {
@@ -149,16 +150,25 @@ const close = () => {
   clearErrors();
 };
 
-const onSubmit = () => {
+const onSubmit = async () => {
   const isValid = validateForm();
 
   if (isValid) {
     try {
-      const data = { ...formData };
-      console.log('send', data);
-      clearFormData();
+      loading.value = true;
+      const data: ICreatePost = { ...formData };
+      const result = await postStore.createPost(data);
+      alert(`
+      Успешно создано!
+      ${JSON.stringify(result, null, 2)}
+      `);
+      close();
+      _page.value = 1;
+      await postStore.fetchPosts();
     } catch (e: unknown) {
       alert(`Onsubmit: ${e}`);
+    } finally {
+      loading.value = false;
     }
   }
 };

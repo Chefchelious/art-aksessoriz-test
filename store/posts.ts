@@ -1,4 +1,4 @@
-import type { IPagination, IPost } from '~/types';
+import type { ICreatePost, IPagination, IPost } from '~/types';
 import axiosApi from '~/axios/axiosApi';
 
 interface IState {
@@ -43,5 +43,9 @@ export const usePostStore = defineStore('use-post-store', {
         this.loading = false;
       }
     },
+    async createPost(post: ICreatePost) {
+      const result =   await axiosApi.post<IPost, { data: IPost }>('/posts', post);
+      return result?.data;
+    }
   },
 });

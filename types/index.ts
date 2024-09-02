@@ -1,8 +1,11 @@
-export interface IPost {
-  userId: number;
-  id: number;
+export interface ICreatePost {
   title: string;
   body: string;
+  userId: number;
+}
+
+export interface IPost extends ICreatePost {
+  id: number;
 }
 
 export interface IPagination {
