@@ -12,7 +12,8 @@
   "dependencies": {
     "@pinia/nuxt": "^0.5.4",
     "nuxt": "^3.13.0",
-    "vue": "latest"
+    "vue": "latest",
+    "axios": "^1.7.4"
   },
   "devDependencies": {
     "@nuxt/eslint": "^0.5.5",
