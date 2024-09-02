@@ -67,6 +67,7 @@ const toggleSorting = () => {
 
 const handlePageChange = (page: number) => {
   _page.value = page;
+  postStore.fetchPosts()
 };
 
 onMounted(() => {
