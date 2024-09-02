@@ -1,6 +1,14 @@
 <template>
   <div class="p-3">
-    <h3 class="mb-2 text-lg">Posts</h3>
+   <div class="mb-2 flex items-center justify-between">
+     <h3 class="text-lg">Posts</h3>
+     <button
+       class="bg-transparent hover:bg-blue-500 text-blue-500 font-semibold hover:text-white py-1 px-2 border border-blue-500 hover:border-transparent rounded"
+       @click="isModalVisible = true"
+     >
+       add post
+     </button>
+   </div>
     <div v-if="posts.length">
       <div class="relative overflow-x-auto shadow-md sm:rounded-lg">
         <table class="w-full text-sm text-left text-gray-500">
@@ -49,17 +57,20 @@
 
       <Pagination :current-page="_page" :total-pages="totalPages" @change-page="handlePageChange" />
     </div>
+    <DialogWindow :is-visible="isModalVisible" @close="isModalVisible = false" />
   </div>
 </template>
 
 <script setup lang="ts">
 import { usePostStore } from '~/store/posts';
 import Pagination from '~/components/ui/Pagination.vue';
+import DialogWindow from '~/components/ui/DialogWindow.vue';
 
 const postStore = usePostStore();
 const { posts, totalPages, _page } = storeToRefs(postStore);
 
 const isSortingId = ref(false);
+const isModalVisible = ref(false);
 
 const toggleSorting = () => {
   isSortingId.value = !isSortingId.value;
