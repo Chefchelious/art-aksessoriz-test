@@ -1,5 +1,5 @@
 
-# Alef Test
+# Art aksessoriz test
 
 ## Environment
 
@@ -34,3 +34,5 @@
 Then open link in browser:
 
 http://localhost:3000/
+
+You can also visit the deployed version on Netlify: https://art-aksessoriz-test.netlify.app/
