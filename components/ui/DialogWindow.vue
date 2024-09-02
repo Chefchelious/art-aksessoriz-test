@@ -6,7 +6,7 @@
       @click="close"
     >
       <form
-        class="bg-white p-6 rounded-lg shadow-lg"
+        class="bg-white p-6 rounded-lg shadow-lg relative"
         @click.stop
         @submit.prevent="onSubmit"
       >
@@ -31,58 +31,31 @@
           </svg>
         </button>
         <h2 class="text-xl font-semibold mb-4">Add post</h2>
-        <div class="w-full max-w-xs">
-          <div class="bg-white shadow-md rounded px-8 pt-6 pb-4 mb-4">
-            <div class="mb-4">
-              <label
-                class="block text-gray-700 text-sm font-bold mb-2"
-                for="username"
-              >
-                Title
-              </label>
-              <input
-                v-model="formData.title"
-                class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline mb-3"
-                :class="`${formDataErrors.titleError ? 'border-red-500' : ''}`"
-                type="text"
-              />
-              <p
-                v-if="formDataErrors.titleError"
-                class="text-red-500 text-xs italic"
-              >
-                required field
-              </p>
-            </div>
-            <div>
-              <label class="block text-gray-700 text-sm font-bold mb-2">
-                Body
-              </label>
-              <textarea
-                v-model="formData.body"
-                class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 mb-3 leading-tight focus:outline-none focus:shadow-outline"
-                :class="`${formDataErrors.bodyError ? 'border-red-500' : ''}`"
-                placeholder="type something..."
-              />
-              <p
-                v-if="formDataErrors.bodyError"
-                class="text-red-500 text-xs italic"
-              >
-                required field
-              </p>
-            </div>
-          </div>
+        <div class="bg-white shadow-md rounded px-8 pt-6 pb-4 mb-4">
+          <FormField
+            v-model="formData.title"
+            label="Title"
+            :error="formDataErrors.titleError"
+            placeholder="type a title"
+          />
+          <FormField
+            v-model="formData.body"
+            label="Body"
+            :error="formDataErrors.bodyError"
+            placeholder="type something..."
+            textarea
+          />
         </div>
-
         <div class="flex items-center justify-between">
           <button
             type="submit"
-            class="bg-blue-500 text-white px-2 py-1 rounded hover:bg-blue-600"
+            class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
           >
             Send
           </button>
           <button
             type="button"
-            class="bg-red-500 text-white px-2 py-1 rounded hover:bg-red-600"
+            class="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600"
             @click="close"
           >
             Close
@@ -94,26 +67,19 @@
 </template>
 
 <script setup lang="ts">
+import { reactive, onMounted, onUnmounted, watch } from 'vue';
 import type { ICreatePost } from '~/types';
 import { usePostStore } from '~/store/posts';
+import FormField from '~/components/ui/FormField.vue';
 
-const props = defineProps<{
-  isVisible: boolean;
-}>();
+const props = defineProps<{ isVisible: boolean }>();
+const emit = defineEmits(['close']);
 
 const postStore = usePostStore();
 const { loading, _page } = storeToRefs(postStore);
 
-const formData = reactive<ICreatePost>({
-  title: '',
-  body: '',
-  userId: 7,
-});
-
-const formDataErrors = reactive({
-  titleError: false,
-  bodyError: false,
-});
+const formData = reactive<ICreatePost>({ title: '', body: '', userId: 7 });
+const formDataErrors = reactive({ titleError: false, bodyError: false });
 
 const clearErrors = () => {
   formDataErrors.titleError = false;
@@ -122,7 +88,6 @@ const clearErrors = () => {
 
 const validateForm = (): boolean => {
   clearErrors();
-
   let isValid = true;
 
   if (!formData.title) {
@@ -137,8 +102,6 @@ const validateForm = (): boolean => {
   return isValid;
 };
 
-const emit = defineEmits(['close', 'update:formData']);
-
 const clearFormData = () => {
   formData.title = '';
   formData.body = '';
@@ -151,21 +114,15 @@ const close = () => {
 };
 
 const onSubmit = async () => {
-  const isValid = validateForm();
-
-  if (isValid) {
+  if (validateForm()) {
     try {
       loading.value = true;
-      const data: ICreatePost = { ...formData };
-      const result = await postStore.createPost(data);
-      alert(`
-      Успешно создано!
-      ${JSON.stringify(result, null, 2)}
-      `);
+      const result = await postStore.createPost({ ...formData });
+      alert(`Успешно создано!\n${JSON.stringify(result, null, 2)}`);
       close();
       _page.value = 1;
       await postStore.fetchPosts();
-    } catch (e: unknown) {
+    } catch (e) {
       alert(`Onsubmit: ${e}`);
     } finally {
       loading.value = false;
@@ -174,29 +131,14 @@ const onSubmit = async () => {
 };
 
 const preventScroll = (isVisible: boolean) => {
-  if (isVisible) {
-    document.body.style.overflow = 'hidden';
-    document.body.style.position = 'fixed';
-  } else {
-    document.body.style.overflow = '';
-    document.body.style.position = '';
-  }
+  document.body.style.overflow = isVisible ? 'hidden' : '';
+  document.body.style.position = isVisible ? 'fixed' : '';
 };
 
-onMounted(() => {
-  preventScroll(props.isVisible);
-});
+onMounted(() => preventScroll(props.isVisible));
+onUnmounted(() => preventScroll(false));
 
-onUnmounted(() => {
-  preventScroll(false);
-});
-
-watch(
-  () => props.isVisible,
-  (newValue) => {
-    preventScroll(newValue);
-  }
-);
+watch(() => props.isVisible, preventScroll);
 </script>
 
 <style scoped>
