@@ -1,75 +1,36 @@
-# Nuxt 3 Minimal Starter
 
-Look at the [Nuxt 3 documentation](https://nuxt.com/docs/getting-started/introduction) to learn more.
+# Alef Test
 
-## Setup
+## Environment
 
-Make sure to install the dependencies:
+- **Node Version:** 18.17.0
+- **NPM Version:** 9.6.7
 
-```bash
-# npm
-npm install
+## Stack
 
-# pnpm
-pnpm install
+- Vue 3
+- TypeScript
+- Tailwind
+- Composition Api
+- Pinia as state manager
 
-# yarn
-yarn install
+## Setup Instructions
 
-# bun
-bun install
-```
+1. **Clone the Repository**
 
-## Development Server
+   ```bash
+   git clone https://github.com/Chefchelious/art-aksessoriz-test.git
 
-Start the development server on `http://localhost:3000`:
+2. **Install Dependencies**
 
-```bash
-# npm
-npm run dev
+   ```bash
+   npm i
 
-# pnpm
-pnpm run dev
+3. **To start the app, run**
 
-# yarn
-yarn dev
+   ```bash
+   npm run dev
 
-# bun
-bun run dev
-```
+Then open link in browser:
 
-## Production
-
-Build the application for production:
-
-```bash
-# npm
-npm run build
-
-# pnpm
-pnpm run build
-
-# yarn
-yarn build
-
-# bun
-bun run build
-```
-
-Locally preview production build:
-
-```bash
-# npm
-npm run preview
-
-# pnpm
-pnpm run preview
-
-# yarn
-yarn preview
-
-# bun
-bun run preview
-```
-
-Check out the [deployment documentation](https://nuxt.com/docs/getting-started/deployment) for more information.
+http://localhost:3000/
