@@ -46,20 +46,27 @@
           </tbody>
         </table>
       </div>
+
+      <Pagination :current-page="_page" :total-pages="totalPages" @change-page="handlePageChange" />
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
 import { usePostStore } from '~/store/posts';
+import Pagination from '~/components/ui/Pagination.vue';
 
 const postStore = usePostStore();
-const { posts } = storeToRefs(postStore);
+const { posts, totalPages, _page } = storeToRefs(postStore);
 
 const isSortingId = ref(false);
 
 const toggleSorting = () => {
   isSortingId.value = !isSortingId.value;
+};
+
+const handlePageChange = (page: number) => {
+  _page.value = page;
 };
 
 onMounted(() => {
