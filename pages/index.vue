@@ -33,7 +33,7 @@
             </tr>
           </thead>
           <tbody>
-            <tr v-for="post in posts" :key="post.id" class="bg-white border-b">
+            <tr v-for="post in sortedPosts" :key="post.id" class="bg-white border-b">
               <th
                 scope="row"
                 class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap"
@@ -69,6 +69,13 @@ const handlePageChange = (page: number) => {
   _page.value = page;
   postStore.fetchPosts()
 };
+
+const sortedPosts = computed(() => {
+  if (isSortingId.value) {
+    return [...posts.value].sort((a, b) => b.id - a.id);
+  }
+  return posts.value;
+});
 
 onMounted(() => {
   postStore.fetchPosts();
